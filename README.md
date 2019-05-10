@@ -1,5 +1,7 @@
 README
 
+GITHUB ISSUE TRACKING: https://github.com/BerejikB/EvE-Intel-Manager/issues
+
 INCLUSIONS:
 Included is C# code I have, as well as the SQL file to GENERATE my database. 
 I did not include the database as it is linked with another database that is available from the EVE Developer website, and is too large to include with this project.
