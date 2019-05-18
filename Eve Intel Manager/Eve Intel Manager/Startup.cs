@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using EVEStandard.Enumerations;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using EVEStandard;
 
 namespace Eve_Intel_Manager
 {
@@ -19,7 +18,7 @@ namespace Eve_Intel_Manager
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
+        public IConfiguration Configuration { get; set;  }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -31,8 +30,33 @@ namespace Eve_Intel_Manager
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            // Add cookie authentication and set the login url
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.LoginPath = "/Auth/Login";
+                });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            // Register your application at: https://developers.eveonline.com/applications to obtain client ID and secret key and add them to user secrets
+            // by right-clicking the solution and selecting Manage User Secrets.
+            // Also, modify the callback URL in appsettings.json to match with your environment.
+
+            // Initialize the client
+            var esiClient = new EVEStandardAPI(
+                    "EVEStandard",                  // User agent
+                    DataSource.Tranquility,         // Server [Tranquility/Singularity]
+                    TimeSpan.FromSeconds(30),       // Timeout
+                    Configuration["SSOCallbackUrl"],
+                    Configuration["ClientId"],
+                    Configuration["SecretKey"]);
+
+            // Register with DI container
+            services.AddSingleton<EVEStandardAPI>(esiClient);
+
+            // Session is required 
+            services.AddSession();
+
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -45,13 +69,15 @@ namespace Eve_Intel_Manager
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
+
+            app.UseAuthentication();
+            app.UseSession();
 
             app.UseMvc(routes =>
             {
