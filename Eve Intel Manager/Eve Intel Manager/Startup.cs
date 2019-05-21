@@ -47,7 +47,7 @@ namespace Eve_Intel_Manager
                     DataSource.Tranquility,         // Server [Tranquility/Singularity]
                     TimeSpan.FromSeconds(30),       // Timeout
                     Configuration["SSOCallbackUrl"],
-                    Configuration["ClientId"],
+                    Configuration["ClientID"],
                     Configuration["SecretKey"]
                     );
 
