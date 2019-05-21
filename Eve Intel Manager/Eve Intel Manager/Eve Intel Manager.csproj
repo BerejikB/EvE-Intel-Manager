@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <RootNamespace>Eve_Intel_Manager</RootNamespace>
+    <UserSecretsId>6eb081cd-7763-4e65-ad12-576ed1175879</UserSecretsId>
   </PropertyGroup>
 
 

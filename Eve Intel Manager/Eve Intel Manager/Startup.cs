@@ -18,7 +18,7 @@ namespace Eve_Intel_Manager
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; set;  }
+        public IConfiguration Configuration { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -43,12 +43,13 @@ namespace Eve_Intel_Manager
 
             // Initialize the client
             var esiClient = new EVEStandardAPI(
-                    "EVEStandard",                  // User agent
+                    "EVE-Intel-Manager",            // User agent
                     DataSource.Tranquility,         // Server [Tranquility/Singularity]
                     TimeSpan.FromSeconds(30),       // Timeout
                     Configuration["SSOCallbackUrl"],
                     Configuration["ClientId"],
-                    Configuration["SecretKey"]);
+                    Configuration["SecretKey"]
+                    );
 
             // Register with DI container
             services.AddSingleton<EVEStandardAPI>(esiClient);
