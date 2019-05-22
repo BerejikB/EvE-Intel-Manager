@@ -14,8 +14,7 @@
       "launchUrl": "https://eveintelmanager20190521111543.azurewebsites.net/",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "ancmHostingModel": "OutOfProcess"
+      }
     },
     "Eve_Intel_Manager": {
       "commandName": "Project",
