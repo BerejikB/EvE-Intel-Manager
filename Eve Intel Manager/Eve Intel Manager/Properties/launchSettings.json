@@ -21,9 +21,15 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-      "applicationUrl": "https://https://eveintelmanager20190521111543.azurewebsites.net  http://https://eveintelmanager20190521111543.azurewebsites.net"
-      }
+        "applicationUrl": "https://https://eveintelmanager20190521111543.azurewebsites.net",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "nativeDebugging": true,
+      "applicationUrl": "https://eveintelmanager20190521111543.azurewebsites.net/"
+    },
+    "Azure Dev Spaces": {
+      "commandName": "Project",
+      "launchBrowser": true
     }
   }
 }
