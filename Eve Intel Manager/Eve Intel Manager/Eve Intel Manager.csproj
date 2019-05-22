@@ -5,15 +5,23 @@
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <RootNamespace>Eve_Intel_Manager</RootNamespace>
     <UserSecretsId>36d05303-a8fe-4a41-bcb9-53e4186de17c</UserSecretsId>
+    <ApplicationInsightsResourceId>/subscriptions/9089dec4-4858-473e-b969-578101d38bd2/resourcegroups/EIMDev/providers/microsoft.insights/components/EveIntelManager20190521111543</ApplicationInsightsResourceId>
+    <ApplicationInsightsAnnotationResourceId>/subscriptions/9089dec4-4858-473e-b969-578101d38bd2/resourcegroups/EIMDev/providers/microsoft.insights/components/EveIntelManager20190521111543</ApplicationInsightsAnnotationResourceId>
   </PropertyGroup>
 
 
   <ItemGroup>
     <PackageReference Include="EntityFramework" Version="6.3.0-preview5-19254-05" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.5.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
     <PackageReference Include="PointyHatGames.EVEStandard" Version="2.0.14" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services" />
   </ItemGroup>
 
 </Project>

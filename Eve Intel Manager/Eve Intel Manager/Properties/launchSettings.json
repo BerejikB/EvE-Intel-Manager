@@ -1,26 +1,28 @@
-﻿{
+{
   "iisSettings": {
-    "windowsAuthentication": false, 
-    "anonymousAuthentication": true, 
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:60043",
-      "sslPort": 44378
+      "applicationUrl": "https://eveintelmanager20190521111543.azurewebsites.net",
+      "sslPort": 5001
     }
   },
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
+      "launchUrl": "https://eveintelmanager20190521111543.azurewebsites.net/",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "ancmHostingModel": "OutOfProcess"
     },
     "Eve_Intel_Manager": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:5001;http://localhost:5000",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+      "applicationUrl": "https://https://eveintelmanager20190521111543.azurewebsites.net  http://https://eveintelmanager20190521111543.azurewebsites.net"
       }
     }
   }
