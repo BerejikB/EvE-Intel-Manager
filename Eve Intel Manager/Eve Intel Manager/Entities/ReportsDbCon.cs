@@ -6,14 +6,22 @@ using Eve_Intel_Manager;
 using EVEStandard;
 using Eve_Intel_Manager.Views.Secure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace Eve_Intel_Manager.Entities
 {
     public class EIMReportsDbContext : DbContext
     {
+        IConfiguration config;
+
+        public EIMReportsDbContext(IConfiguration config)
+        {
+            this.config = config;
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=tcp:eveintelmanager20190521111543dbserver.database.windows.net,1433;Initial Catalog=EveIntelManager20190521111543_db;Persist Security Info=False;User ID={your_username};Password={your_password};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+            optionsBuilder.UseSqlServer(config.GetConnectionString("DbConString"));
         }
         
         public DbSet<Reports> Report { get; set; }
