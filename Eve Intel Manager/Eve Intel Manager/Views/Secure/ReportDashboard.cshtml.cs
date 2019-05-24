@@ -9,8 +9,9 @@ namespace Eve_Intel_Manager.Views.Secure
 {
     public class ReportDashboardModel : PageModel
     {
-        public void OnGet()
+        public IActionResult OnGet()
         {
+            return new RedirectToPageResult("ReportDashboard");
         }
     }
 }
