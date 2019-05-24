@@ -1,6 +1,15 @@
 ﻿@page
-@model Eve_Intel_Manager.Views.Secure.ReportDashboardModel
+@using Eve_Intel_Manager.Views.Secure
+@model IEnumerable<Reports>
+
 
 @{ViewData["Title"] = "Reports";
     Layout = "~/Views/Secure/_DashboardLayout.cshtml";
 }
+
+@foreach (var r in Model)
+    {
+
+<div class="ReportBody">test</div>
+    
+    }
