@@ -71,7 +71,7 @@ namespace Eve_Intel_Manager.Controllers
 
             if (Guid.TryParse(state, out Guid stateGuid))
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Secure");
             }
             else
             {
