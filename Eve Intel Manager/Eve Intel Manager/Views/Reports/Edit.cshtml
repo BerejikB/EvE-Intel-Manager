@@ -1,0 +1,42 @@
+﻿@model Eve_Intel_Manager.Entities.Reports
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Secure/_DashboardLayout.cshtml";
+}
+
+<h1>Edit</h1>
+
+<h4>Reports</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="ReportID" />
+            <div class="form-group">
+                <label asp-for="ReportBody" class="control-label"></label>
+                <input asp-for="ReportBody" class="form-control" />
+                <span asp-validation-for="ReportBody" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ReportGenerated" class="control-label"></label>
+                <input asp-for="ReportGenerated" class="form-control" />
+                <span asp-validation-for="ReportGenerated" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ReportExpiry" class="control-label"></label>
+                <input asp-for="ReportExpiry" class="form-control" />
+                <span asp-validation-for="ReportExpiry" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

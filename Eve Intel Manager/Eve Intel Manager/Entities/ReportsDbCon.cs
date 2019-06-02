@@ -12,18 +12,10 @@ namespace Eve_Intel_Manager.Entities
 {
     public class EIMReportsDbContext : DbContext
     {
-        IConfiguration config;
+        public EIMReportsDbContext(DbContextOptions<EIMReportsDbContext> o)
+            : base(o)
+        { }
 
-        public EIMReportsDbContext(IConfiguration config)
-        {
-            this.config = config;
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(config.GetConnectionString("DbConString"));
-        }
-        
         public DbSet<Reports> Report { get; set; }
     }
 }
