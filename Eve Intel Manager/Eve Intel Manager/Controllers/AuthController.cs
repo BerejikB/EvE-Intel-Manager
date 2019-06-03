@@ -10,7 +10,6 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-
 namespace Eve_Intel_Manager.Controllers
 {
     public class AuthController : Controller
@@ -57,7 +56,7 @@ namespace Eve_Intel_Manager.Controllers
 
         public async Task<IActionResult> Callback(string code, string state)
         {
-            var authorization = new Authorization
+            var authorization = new Authorization()
             {
                 AuthorizationCode = code,
                 ExpectedState = HttpContext.Session.GetString(SSOStateKey),
