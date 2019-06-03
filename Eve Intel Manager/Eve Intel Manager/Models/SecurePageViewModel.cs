@@ -2,15 +2,25 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Eve_Intel_Manager;
+using Eve_Intel_Manager.Entities;
+
 using Microsoft.AspNetCore.Mvc;
 
 
 namespace Eve_Intel_Manager.Models
-{    
-        public class SecurePageViewModel
+{
+    public class SecurePageViewModel
     {
-            public string CharacterName { get; set; }
-            public string CorporationName { get; set; }
-            public string CharacterLocation { get; set; }
+        public string CharacterName { get; set; }
+        public string CorporationName { get; set; }
+        public string CharacterLocation { get; set; }
+
+        
+        public void setname()
+        {
+            Reports report = new Reports();
+            report.CreatedBy = CharacterName;
         }
     }
+}

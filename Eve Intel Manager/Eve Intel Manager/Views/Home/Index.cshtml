@@ -1,13 +1,16 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+@inject Microsoft.ApplicationInsights.AspNetCore.JavaScriptSnippet JavaScriptSnippet
+@using Eve_Intel_Manager.Views;
+
 
 <p>&nbsp;</p>
 <h1 style="text-align: center;"><span style="color: #000000;">EVE INTEL MANAGER</span></h1>
 <p style="text-align: center;"><span style="color: #000000;">&nbsp;</span></p>
 <p style="text-align: center;"><span style="color: #000000;">&nbsp;</span></p>
 <h4 style="text-align: center;"><span style="color: #000000;">LOG IN TO CONTINUE</span></h4>
-<div style="text-align: center;"><button> <a id="button" class=" navbar-buttons " href="/Auth/Login"><img src="https://web.ccpgamescdn.com/eveonlineassets/developers/eve-sso-login-white-small.png" alt="LOG IN with EVE Online" /></a> </button></div>
+<div style="text-align: center;"><button> <a id="button" class=" navbar-buttons " href="/Auth/Login"><img src="https://web.ccpgamescdn.com/eveonlineassets/developers/eve-sso-login-white-small.png" alt="LOG IN with EVE Online" /><a/> </button></div>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>

@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Eve_Intel_Manager.Entities;
-using EVEStandard;
 
 namespace Eve_Intel_Manager.Controllers
 {
@@ -17,11 +16,13 @@ namespace Eve_Intel_Manager.Controllers
         public ReportsController(EIMReportsDbContext context)
         {
             _context = context;
+
         }
 
         // GET: Reports
         public async Task<IActionResult> Index()
         {
+           
             return View(await _context.Report.ToListAsync());
         }
 
@@ -46,7 +47,7 @@ namespace Eve_Intel_Manager.Controllers
         // GET: Reports/Create
         public IActionResult Create()
         {
-            return View();
+           return View();
         }
 
         // POST: Reports/Create
@@ -54,13 +55,15 @@ namespace Eve_Intel_Manager.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ReportID,ReportBody,ReportGenerated,ReportExpiry")] Reports reports)
+        public async Task<IActionResult> Create([Bind("ReportID,ReportBody,ReportGenerated,ReportExpiry,CreatedBy")] Reports reports)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(reports);
                 await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
+                
             }
             return View(reports);
         }
@@ -86,7 +89,7 @@ namespace Eve_Intel_Manager.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ReportID,ReportBody,ReportGenerated,ReportExpiry")] Reports reports)
+        public async Task<IActionResult> Edit(int id, [Bind("ReportID,ReportBody,ReportGenerated,ReportExpiry,CreatedBy")] Reports reports)
         {
             if (id != reports.ReportID)
             {

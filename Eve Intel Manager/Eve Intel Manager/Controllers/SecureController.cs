@@ -43,7 +43,7 @@ namespace Eve_Intel_Manager.Controllers
             var locationInfo = await esiClient.Location.GetCharacterLocationV1Async(auth);
             var location = await esiClient.Universe.GetSolarSystemInfoV4Async(locationInfo.Model.SolarSystemId);
 
-            var model = new Eve_Intel_Manager.Models.SecurePageViewModel
+           var model = new Eve_Intel_Manager.Models.SecurePageViewModel
             {
                 CharacterName = characterInfo.Model.Name,
                 CorporationName = corporationInfo.Model.Name,
@@ -52,5 +52,6 @@ namespace Eve_Intel_Manager.Controllers
 
             return View(model);
         }
+
     }
 }
