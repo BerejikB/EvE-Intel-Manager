@@ -16,6 +16,7 @@ namespace Eve_Intel_Manager.Entities
             : base(o)
         { }
 
+
         public DbSet<Reports> Report { get; set; }
     }
 }

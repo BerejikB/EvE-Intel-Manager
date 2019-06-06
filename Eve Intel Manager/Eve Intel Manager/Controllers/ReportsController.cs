@@ -16,7 +16,7 @@ namespace Eve_Intel_Manager.Controllers
         public ReportsController(EIMReportsDbContext context)
         {
             _context = context;
-
+   
         }
 
         // GET: Reports
