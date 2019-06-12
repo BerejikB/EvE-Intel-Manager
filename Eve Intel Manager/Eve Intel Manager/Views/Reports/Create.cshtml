@@ -19,7 +19,7 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="ReportBody" class="control-label">Details</label>
-                <textarea asp-for="ReportBody" class="form-control" />
+                <textarea asp-for="ReportBody" class="form-control"></textarea>
                 <span asp-validation-for="ReportBody" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -40,7 +40,7 @@
                 @Model.CreatedBy
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="create" class="btn btn-primary" href="/Reports/" />
             </div>
         </form>
     </div>
