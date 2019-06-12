@@ -13,26 +13,27 @@
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="ReportID" />
             <div class="form-group">
-                <label asp-for="ReportBody" class="control-label"></label>
-                <input asp-for="ReportBody" class="form-control" />
+                <label asp-for="ReportBody" class="control-label">Details</label>
+                <textarea asp-for="ReportBody" class="form-control" />
                 <span asp-validation-for="ReportBody" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ReportGenerated" class="control-label"></label>
-                <input asp-for="ReportGenerated" class="form-control" />
-                <span asp-validation-for="ReportGenerated" class="text-danger"></span>
+                <label class="control-label">UTC Report was generated:</label>
+                @Model.ReportGenerated
+            </div>
+            <div>
+                <label class="control-label">System report was generated in:</label>
+                @Model.ReportLocation
             </div>
             <div class="form-group">
-                <label asp-for="ReportExpiry" class="control-label"></label>
+                <label class="control-label">Length of time before report expires</label>
                 <input asp-for="ReportExpiry" class="form-control" />
                 <span asp-validation-for="ReportExpiry" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="CreatedBy" class="control-label"></label>
-                <input asp-for="CreatedBy" class="form-control" />
-                <span asp-validation-for="CreatedBy" class="text-danger"></span>
+                <label class="control-label">Creator of report</label>
+                @Model.CreatedBy
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

@@ -26,7 +26,8 @@ namespace Eve_Intel_Manager.Entities
     [Authorize]
     public class Reports
     {
-        public static DateTime UtcNow { get; }
+
+       
         [Key]
         public int ReportID { get; set; }
         [Required]
@@ -34,7 +35,21 @@ namespace Eve_Intel_Manager.Entities
         [Required]
         public string ReportLocation { get; set; }
         [Required]
-        public string ReportGenerated { get; set; } = UtcNow.ToUniversalTime().ToString();
+        public DateTime ReportGenerated
+        {
+            get
+            {
+                DateTime time = new DateTime();
+                time.ToUniversalTime();
+                return time;
+            }
+            set
+            {
+                DateTime time = new DateTime();
+                time.ToUniversalTime();
+            }
+        }
+
         [Required]
         public string ReportExpiry { get; set; } = "00:15:00";
         [Required]

@@ -19,15 +19,15 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="ReportBody" class="control-label">Details</label>
-                <input asp-for="ReportBody" class="form-control" />
+                <textarea asp-for="ReportBody" class="form-control" />
                 <span asp-validation-for="ReportBody" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label class="control-label">UTC Report was generated</label>
+                <label class="control-label">UTC Report was generated:</label>
                 @Model.ReportGenerated
             </div>
             <div>
-                <label class="control-label">System report was generated in</label>
+                <label class="control-label">System report was generated in:</label>
                 @Model.ReportLocation
             </div>
             <div class="form-group">
@@ -37,7 +37,7 @@
             </div>
             <div class="form-group">
                 <label class="control-label">Creator of report</label>
-                @Model.CreatedBy)
+                @Model.CreatedBy
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
