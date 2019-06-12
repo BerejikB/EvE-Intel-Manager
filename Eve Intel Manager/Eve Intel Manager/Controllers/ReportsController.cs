@@ -6,23 +6,35 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Eve_Intel_Manager.Entities;
+using EVEStandard;
+using EVEStandard.Models.API;
+using EVEStandard.Models.SSO;
+
+using Microsoft.AspNetCore.Authorization;
+
+
+using System.Security.Claims;
+
 
 namespace Eve_Intel_Manager.Controllers
 {
+    [Authorize]
     public class ReportsController : Controller
     {
         private readonly EIMReportsDbContext _context;
 
-        public ReportsController(EIMReportsDbContext context)
+        private readonly EVEStandardAPI esiClient;
+        public ReportsController(EIMReportsDbContext context, EVEStandardAPI esiClient)
         {
             _context = context;
-   
+            this.esiClient = esiClient;
+
         }
 
         // GET: Reports
         public async Task<IActionResult> Index()
         {
-           
+
             return View(await _context.Report.ToListAsync());
         }
 
@@ -45,9 +57,35 @@ namespace Eve_Intel_Manager.Controllers
         }
 
         // GET: Reports/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-           return View();
+            var characterId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var characterInfo = await esiClient.Character.GetCharacterPublicInfoV4Async(characterId);
+            var corporationInfo = await esiClient.Corporation.GetCorporationInfoV4Async((int)characterInfo.Model.CorporationId);
+
+            var auth = new AuthDTO
+            {
+                AccessToken = new AccessTokenDetails
+                {
+                    AccessToken = User.FindFirstValue("AccessToken"),
+                    ExpiresUtc = DateTime.Parse(User.FindFirstValue("AccessTokenExpiry")),
+                    RefreshToken = User.FindFirstValue("RefreshToken")
+                },
+                CharacterId = characterId,
+                Scopes = User.FindFirstValue("Scopes")
+            };
+
+            var locationInfo = await esiClient.Location.GetCharacterLocationV1Async(auth);
+            var location = await esiClient.Universe.GetSolarSystemInfoV4Async(locationInfo.Model.SolarSystemId);
+
+            var reports = new Eve_Intel_Manager.Entities.Reports
+            {
+                CreatedBy = characterInfo.Model.Name,
+                //CorporationName = corporationInfo.Model.Name,
+                ReportLocation = location.Model.Name
+            };
+
+            return View(reports);
         }
 
         // POST: Reports/Create
@@ -63,7 +101,7 @@ namespace Eve_Intel_Manager.Controllers
                 await _context.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
-                
+
             }
             return View(reports);
         }

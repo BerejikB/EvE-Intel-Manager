@@ -50,6 +50,14 @@ namespace Eve_Intel_Manager.Controllers
                 CharacterLocation = location.Model.Name
             };
 
+
+            var model2 = new Eve_Intel_Manager.Models.ReportStaticDataModel
+            {
+                CharacterName = characterInfo.Model.Name,
+                CorporationName = corporationInfo.Model.Name,
+                CharacterLocation = location.Model.Name
+            };
+
             return View(model);
         }
 
