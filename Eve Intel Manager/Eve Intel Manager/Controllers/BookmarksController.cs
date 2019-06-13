@@ -96,8 +96,6 @@ namespace Eve_Intel_Manager.Controllers
             var bookmarks = new Eve_Intel_Manager.Entities.Bookmarks
             {
                 
-           
-
             };
 
 
