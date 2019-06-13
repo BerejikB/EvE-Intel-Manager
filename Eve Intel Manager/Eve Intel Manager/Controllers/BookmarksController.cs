@@ -9,43 +9,49 @@ using Eve_Intel_Manager.Entities;
 using EVEStandard;
 using EVEStandard.Models.API;
 using EVEStandard.Models.SSO;
-
 using Microsoft.AspNetCore.Authorization;
-
-
 using System.Security.Claims;
-
-
 namespace Eve_Intel_Manager.Controllers
 {
     [Authorize]
-    public class ReportsController : Controller
+    public class BookmarksController : Controller
     {
-        private readonly EIMReportsDbContext _context;
-
+        private readonly EIMBookmarksDbContext _context;
         private readonly EVEStandardAPI esiClient;
-        public ReportsController(EIMReportsDbContext context, EVEStandardAPI esiClient)
+
+        public BookmarksController(EIMBookmarksDbContext context)
         {
             _context = context;
             this.esiClient = esiClient;
-
         }
 
-        // GET: Reports
-        public DateTime timenow()
-        {
-            DateTime time = new DateTime();
-            time.ToUniversalTime();
-            return time;
-        }
-
+        ESIModelDTO<List<EVEStandard.Models.Bookmark>> playerbms = new ESIModelDTO<List<EVEStandard.Models.Bookmark>>();
+        
+        // GET: Bookmarks
         public async Task<IActionResult> Index()
         {
+            var characterId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var characterInfo = await esiClient.Character.GetCharacterPublicInfoV4Async(characterId);
+            var corporationInfo = await esiClient.Corporation.GetCorporationInfoV4Async((int)characterInfo.Model.CorporationId);
 
-            return View(await _context.Report.ToListAsync());
+            var auth = new AuthDTO
+            {
+                AccessToken = new AccessTokenDetails
+                {
+                    AccessToken = User.FindFirstValue("AccessToken"),
+                    ExpiresUtc = DateTime.Parse(User.FindFirstValue("AccessTokenExpiry")),
+                    RefreshToken = User.FindFirstValue("RefreshToken")
+                },
+                CharacterId = characterId,
+                Scopes = User.FindFirstValue("Scopes")
+            };
+
+            playerbms = await esiClient.Bookmarks.ListBookmarksV2Async(auth, 1, "ifNoneMatch=null");
+            //return View(await _context.Bookmarks.ToListAsync());
+            return View(playerbms);
         }
 
-        // GET: Reports/Details/5
+        // GET: Bookmarks/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -53,17 +59,17 @@ namespace Eve_Intel_Manager.Controllers
                 return NotFound();
             }
 
-            var reports = await _context.Report
-                .FirstOrDefaultAsync(m => m.ReportID == id);
-            if (reports == null)
+            var bookmarks = await _context.Bookmarks
+                .FirstOrDefaultAsync(m => m.BookmarkID == id);
+            if (bookmarks == null)
             {
                 return NotFound();
             }
 
-            return View(reports);
+            return View(bookmarks);
         }
 
-        // GET: Reports/Create
+        // GET: Bookmarks/Create
         public async Task<IActionResult> Create()
         {
             var characterId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -85,36 +91,36 @@ namespace Eve_Intel_Manager.Controllers
             var locationInfo = await esiClient.Location.GetCharacterLocationV1Async(auth);
             var location = await esiClient.Universe.GetSolarSystemInfoV4Async(locationInfo.Model.SolarSystemId);
 
-            var reports = new Eve_Intel_Manager.Entities.Reports
+            
+
+            var bookmarks = new Eve_Intel_Manager.Entities.Bookmarks
             {
-                CreatedBy = characterInfo.Model.Name,
-                //CorporationName = corporationInfo.Model.Name,
-                ReportLocation = location.Model.Name,
-                ReportGenerated = timenow()
+                
+           
+
             };
 
-            return View(reports);
+
+            return View(bookmarks);
         }
 
-        // POST: Reports/Create
+        // POST: Bookmarks/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost, ActionName ("SubmitNew")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ReportID,ReportBody,ReportGenerated,ReportExpiry,CreatedBy")] Reports reports)
+        public async Task<IActionResult> Create([Bind("BookmarkID,Xcoord,Ycoord,Zcoord,Created,CreatorId,FolderId,Label,LocationID,Notes")] Bookmarks bookmarks)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(reports);
+                _context.Add(bookmarks);
                 await _context.SaveChangesAsync();
-
                 return RedirectToAction(nameof(Index));
-
             }
-            return View(reports);
+            return View(bookmarks);
         }
 
-        // GET: Reports/Edit/5
+        // GET: Bookmarks/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -122,22 +128,22 @@ namespace Eve_Intel_Manager.Controllers
                 return NotFound();
             }
 
-            var reports = await _context.Report.FindAsync(id);
-            if (reports == null)
+            var bookmarks = await _context.Bookmarks.FindAsync(id);
+            if (bookmarks == null)
             {
                 return NotFound();
             }
-            return View(reports);
+            return View(bookmarks);
         }
 
-        // POST: Reports/Edit/5
+        // POST: Bookmarks/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost, ActionName("Edit")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ReportID,ReportBody,ReportGenerated,ReportExpiry,CreatedBy")] Reports reports)
+        public async Task<IActionResult> Edit(int id, [Bind("BookmarkID,Xcoord,Ycoord,Zcoord,Created,CreatorId,FolderId,Label,LocationID,Notes")] Bookmarks bookmarks)
         {
-            if (id != reports.ReportID)
+            if (id != bookmarks.BookmarkID)
             {
                 return NotFound();
             }
@@ -146,12 +152,12 @@ namespace Eve_Intel_Manager.Controllers
             {
                 try
                 {
-                    _context.Update(reports);
+                    _context.Update(bookmarks);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ReportsExists(reports.ReportID))
+                    if (!BookmarksExists(bookmarks.BookmarkID))
                     {
                         return NotFound();
                     }
@@ -162,10 +168,10 @@ namespace Eve_Intel_Manager.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(reports);
+            return View(bookmarks);
         }
 
-        // GET: Reports/Delete/5
+        // GET: Bookmarks/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -173,30 +179,35 @@ namespace Eve_Intel_Manager.Controllers
                 return NotFound();
             }
 
-            var reports = await _context.Report
-                .FirstOrDefaultAsync(m => m.ReportID == id);
-            if (reports == null)
+            var bookmarks = await _context.Bookmarks
+                .FirstOrDefaultAsync(m => m.BookmarkID == id);
+            if (bookmarks == null)
             {
                 return NotFound();
             }
 
-            return View(reports);
+            return View(bookmarks);
         }
 
-        // POST: Reports/Delete/5
+        // POST: Bookmarks/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var reports = await _context.Report.FindAsync(id);
-            _context.Report.Remove(reports);
+            var bookmarks = await _context.Bookmarks.FindAsync(id);
+            _context.Bookmarks.Remove(bookmarks);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ReportsExists(int id)
+        private bool BookmarksExists(int id)
         {
-            return _context.Report.Any(e => e.ReportID == id);
+            return _context.Bookmarks.Any(e => e.BookmarkID == id);
         }
+
+
+
+        public void ReadBmList()
+        { }
     }
 }

@@ -14,7 +14,6 @@ using EVEStandard.Models.API;
 using EVEStandard.Models.SSO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
 using System.Security.Claims;
 
 
