@@ -85,12 +85,12 @@ namespace Eve_Intel_Manager.Controllers
             var locationInfo = await esiClient.Location.GetCharacterLocationV1Async(auth);
             var location = await esiClient.Universe.GetSolarSystemInfoV4Async(locationInfo.Model.SolarSystemId);
 
-            var reports = new Eve_Intel_Manager.Entities.Reports
+            var reports = new Eve_Intel_Manager.Entities.Reports()
             {
                 CreatedBy = characterInfo.Model.Name,
                 //CorporationName = corporationInfo.Model.Name,
                 ReportLocation = location.Model.Name,
-                ReportGenerated = timenow()
+                ReportGenerated = SetTime()
             };
 
             return View(reports);
@@ -99,10 +99,33 @@ namespace Eve_Intel_Manager.Controllers
         // POST: Reports/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost, ActionName ("SubmitNew")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ReportID,ReportBody,ReportGenerated,ReportExpiry,CreatedBy")] Reports reports)
+        public async Task<IActionResult> Create(Reports reports)
         {
+            var characterId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var characterInfo = await esiClient.Character.GetCharacterPublicInfoV4Async(characterId);
+            var corporationInfo = await esiClient.Corporation.GetCorporationInfoV4Async((int)characterInfo.Model.CorporationId);
+
+            var auth = new AuthDTO
+            {
+                AccessToken = new AccessTokenDetails
+                {
+                    AccessToken = User.FindFirstValue("AccessToken"),
+                    ExpiresUtc = DateTime.Parse(User.FindFirstValue("AccessTokenExpiry")),
+                    RefreshToken = User.FindFirstValue("RefreshToken")
+                },
+                CharacterId = characterId,
+                Scopes = User.FindFirstValue("Scopes")
+            };
+
+            var locationInfo = await esiClient.Location.GetCharacterLocationV1Async(auth);
+            var location = await esiClient.Universe.GetSolarSystemInfoV4Async(locationInfo.Model.SolarSystemId);
+
+                reports.CreatedBy = characterInfo.Model.Name;
+                reports.ReportLocation = location.Model.Name;
+                reports.ReportGenerated = SetTime();
+
             if (ModelState.IsValid)
             {
                 _context.Add(reports);
@@ -117,6 +140,8 @@ namespace Eve_Intel_Manager.Controllers
         // GET: Reports/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+           
+
             if (id == null)
             {
                 return NotFound();
@@ -127,6 +152,7 @@ namespace Eve_Intel_Manager.Controllers
             {
                 return NotFound();
             }
+            await SetData(reports);
             return View(reports);
         }
 
@@ -137,6 +163,8 @@ namespace Eve_Intel_Manager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ReportID,ReportBody,ReportGenerated,ReportExpiry,CreatedBy")] Reports reports)
         {
+            await SetData(reports);
+
             if (id != reports.ReportID)
             {
                 return NotFound();
@@ -144,6 +172,8 @@ namespace Eve_Intel_Manager.Controllers
 
             if (ModelState.IsValid)
             {
+                reports.ReportGenerated = SetTime();
+
                 try
                 {
                     _context.Update(reports);
@@ -197,6 +227,45 @@ namespace Eve_Intel_Manager.Controllers
         private bool ReportsExists(int id)
         {
             return _context.Report.Any(e => e.ReportID == id);
+        }
+
+
+        string SetTime()
+        {
+            DateTime timenow = new DateTime();
+            timenow.ToUniversalTime();
+            string timestring = timenow.ToString();
+            return timestring;
+            
+        }
+
+        public async Task<IActionResult> SetData(Reports reports)
+        {
+            var characterId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var characterInfo = await esiClient.Character.GetCharacterPublicInfoV4Async(characterId);
+            var corporationInfo = await esiClient.Corporation.GetCorporationInfoV4Async((int)characterInfo.Model.CorporationId);
+
+            var auth = new AuthDTO
+            {
+                AccessToken = new AccessTokenDetails
+                {
+                    AccessToken = User.FindFirstValue("AccessToken"),
+                    ExpiresUtc = DateTime.Parse(User.FindFirstValue("AccessTokenExpiry")),
+                    RefreshToken = User.FindFirstValue("RefreshToken")
+                },
+                CharacterId = characterId,
+                Scopes = User.FindFirstValue("Scopes")
+            };
+
+            var locationInfo = await esiClient.Location.GetCharacterLocationV1Async(auth);
+            var location = await esiClient.Universe.GetSolarSystemInfoV4Async(locationInfo.Model.SolarSystemId);
+            reports.CreatedBy = characterInfo.Model.Name;
+            reports.ReportLocation = location.Model.Name;
+            reports.ReportGenerated = SetTime();
+
+            return View(reports);
+
+
         }
     }
 }

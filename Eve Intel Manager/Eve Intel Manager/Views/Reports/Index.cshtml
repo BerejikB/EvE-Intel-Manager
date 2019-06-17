@@ -13,21 +13,22 @@
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ReportGenerated)
+            <th>              
+                Time Generated
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CreatedBy)
+                Created By
+            </th>
+            <th>             
+                Location
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ReportLocation)
+               
+                Body
+
             </th>
-            
-            <th>
-                @Html.DisplayNameFor(model => model.ReportBody)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ReportExpiry)
+            <th>             
+                Time of Expiration
             </th>
             <th></th>
         </tr>
@@ -35,25 +36,29 @@
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ReportBody)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ReportGenerated)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ReportExpiry)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CreatedBy)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.ReportID">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.ReportID">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.ReportID">Delete</a>
-                </td>
-            </tr>
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ReportGenerated)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedBy)
+            </td>
+            <td>
+                @Html.DisplayNameFor(model => model.ReportLocation)
+            <td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ReportBody)
+
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ReportExpiry)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ReportID">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.ReportID">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.ReportID">Delete</a>
+            </td>
+        </tr>
         }
     </tbody>
 </table>

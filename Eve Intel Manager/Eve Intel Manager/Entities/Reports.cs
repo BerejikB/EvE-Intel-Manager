@@ -15,6 +15,9 @@ using EVEStandard.Models.SSO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Eve_Intel_Manager.Entities;
+
 
 
 
@@ -26,7 +29,8 @@ namespace Eve_Intel_Manager.Entities
     public class Reports
     {
 
-       
+
+
         [Key]
         public int ReportID { get; set; }
         [Required]
@@ -34,25 +38,16 @@ namespace Eve_Intel_Manager.Entities
         [Required]
         public string ReportLocation { get; set; }
         [Required]
-        public DateTime ReportGenerated
-        {
-            get
-            {
-                DateTime time = new DateTime();
-                time.ToUniversalTime();
-                return time;
-            }
-            set
-            {
-                DateTime time = new DateTime();
-                time.ToUniversalTime();
-            }
-        }
-
+        public string ReportGenerated { get; set; }
         [Required]
         public string ReportExpiry { get; set; } = "00:15:00";
         [Required]
-        public string CreatedBy { get; set; }
+        public string CreatedBy
+        {
+            get; set;
+        }
+
+
 
     }
 }

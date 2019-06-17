@@ -21,6 +21,6 @@ namespace Eve_Intel_Manager.Entities
         public DbSet<Reports> Report { get; set; }
 
 
-        public DbSet<Eve_Intel_Manager.Entities.Bookmarks> Bookmarks { get; set; }
+        //public DbSet<Eve_Intel_Manager.Entities.Bookmarks> Bookmarks { get; set; }
     }
 }

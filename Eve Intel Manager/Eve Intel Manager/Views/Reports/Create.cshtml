@@ -2,12 +2,9 @@
 
 @{
     ViewData["Title"] = "Create";
- Layout = "~/Views/Secure/_DashboardLayout.cshtml";
+    Layout = "~/Views/Secure/_DashboardLayout.cshtml";
 
 }
-
-
-
 
 <h1>Create</h1>
 
@@ -30,6 +27,7 @@
             <div>
                 <label class="control-label">System report was generated in:</label>
                 @Model.ReportLocation
+                
             </div>
             <div class="form-group">
                 <label class="control-label">Length of time before report expires</label>
@@ -39,10 +37,10 @@
             <div class="form-group">
                 <label class="control-label">Creator of report</label>
                 @Model.CreatedBy
+                
             </div>
             <div class="form-group">
-                
-                <input type="submit" value="Create" class="btn btn-primary" name="SubmitNew" />
+                <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
     </div>

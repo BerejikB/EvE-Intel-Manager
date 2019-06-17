@@ -4,7 +4,6 @@
     ViewData["Title"] = "Edit";
     Layout = "~/Views/Secure/_DashboardLayout.cshtml";
 }
-
 <h1>Edit</h1>
 
 <h4>Reports</h4>
@@ -15,7 +14,7 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="ReportBody" class="control-label">Details</label>
-                <textarea asp-for="ReportBody" class="form-control" />
+                <textarea asp-for="ReportBody" class="form-control"> </textarea>
                 <span asp-validation-for="ReportBody" class="text-danger"></span>
             </div>
             <div class="form-group">
