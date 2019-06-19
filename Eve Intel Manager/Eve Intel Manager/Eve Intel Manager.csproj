@@ -9,6 +9,14 @@
     <ApplicationInsightsAnnotationResourceId>/subscriptions/9089dec4-4858-473e-b969-578101d38bd2/resourcegroups/EIMDev/providers/microsoft.insights/components/EveIntelManager20190521111543</ApplicationInsightsAnnotationResourceId>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Views\Home\Logout.aspx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Views\Home\Logout.aspx" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="bootstrap" Version="4.3.1" />
@@ -23,6 +31,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
+    <PackageReference Include="Nancy.Authentication.Forms" Version="2.0.0" />
     <PackageReference Include="PointyHatGames.EVEStandard" Version="2.0.16" />
   </ItemGroup>
 

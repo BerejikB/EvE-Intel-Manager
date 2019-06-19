@@ -14,7 +14,7 @@ using System.Linq;
 
 using Microsoft.EntityFrameworkCore;
 using Eve_Intel_Manager.Entities;
-
+using Nancy.Authentication.Forms;
 
 namespace Eve_Intel_Manager.Controllers
 {
@@ -79,7 +79,12 @@ namespace Eve_Intel_Manager.Controllers
             return View(notAuthorized);
         }
 
+        public async Task Button_Logout(object sender, EventArgs e)
+        {
+            FormsAuthentication.LogOutResponse();
 
+
+        }
 
         public async Task AuthUser(string usercorp, string charname)
         {
