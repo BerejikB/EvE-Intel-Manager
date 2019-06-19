@@ -11,10 +11,8 @@ using EVEStandard.Models.API;
 using EVEStandard.Models.SSO;
 using Eve_Intel_Manager.Models;
 using Microsoft.AspNetCore.Authorization;
-
-
 using System.Security.Claims;
-using Eve_Intel_Manager.Authorizer;
+
 
 namespace Eve_Intel_Manager.Controllers
 {
@@ -22,28 +20,25 @@ namespace Eve_Intel_Manager.Controllers
     public class ReportsController : Controller
     {
         private readonly EIMReportsDbContext _context;
-        private readonly CharInfo _charInfo;
+        private readonly Reports report;
         private readonly EVEStandardAPI esiClient;
-        public ReportsController(EIMReportsDbContext context, EVEStandardAPI esiClient, CharInfo charInfo)
+        public ReportsController(EIMReportsDbContext context, EVEStandardAPI esiClient)
         {
             _context = context;
             this.esiClient = esiClient;
-            _charInfo = charInfo;
+
 
         }
         bool isAuthed = false;
-        public async Task AuthUser(EIMReportsDbContext context, EVEStandardAPI esiClient)
-        {
 
-            isAuthed = context.UserModel.Any(cn => cn.charName == _charInfo.characterName)
-                   && context.AccessModel.Any(n => n.corpName == _charInfo.characterCorp);
-        }
 
         // GET: Reports
         [Authorize]
         public async Task<IActionResult> Index()
         {
-            await AuthUser(_context, esiClient);
+            
+            await SetData(report);
+            //INSERT MODEL HERE
             if (isAuthed)
             {
                 return View(await _context.Report.ToListAsync());
@@ -53,36 +48,49 @@ namespace Eve_Intel_Manager.Controllers
                 var notAuthorized = new ErrorViewModel();
                 return View(notAuthorized);
             }
-           
+
         }
 
         // GET: Reports/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
+            if (isAuthed)
             {
-                return NotFound();
+
+                if (id == null)
+                {
+                    return NotFound();
+                }
+
+                var reports = await _context.Report
+                    .FirstOrDefaultAsync(m => m.ReportID == id);
+                if (reports == null)
+                {
+                    return NotFound();
+                }
+
+                return View(reports);
             }
 
-            var reports = await _context.Report
-                .FirstOrDefaultAsync(m => m.ReportID == id);
-            if (reports == null)
+            else
             {
-                return NotFound();
+                return RedirectToAction(nameof(Index));
             }
-
-            return View(reports);
         }
-
         // GET: Reports/Create
         public async Task<IActionResult> Create()
         {
-
-
             var reports = new Eve_Intel_Manager.Entities.Reports();
             var reportInputData = new Eve_Intel_Manager.Models.ReportViewModel();
             await SetData(reports);
-            return View(reports);
+            if (isAuthed)
+            {
+                return View(reports);
+            }
+            else
+            {
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         // POST: Reports/Create
@@ -92,37 +100,49 @@ namespace Eve_Intel_Manager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Reports reports)
         {
-
-            await SetData(reports);
-            if (ModelState.IsValid)
+            if (isAuthed)
             {
-                _context.Add(reports);
-                await _context.SaveChangesAsync();
 
-                return RedirectToAction(nameof(Index));
+                await SetData(reports);
+                if (ModelState.IsValid)
+                {
+                    _context.Add(reports);
+                    await _context.SaveChangesAsync();
 
+                    return RedirectToAction(nameof(Index));
+
+                }
+                return View(reports);
             }
-            return View(reports);
+            else
+            {
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         // GET: Reports/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-
-
-            if (id == null)
+            if (isAuthed)
             {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
 
-            var reports = await _context.Report.FindAsync(id);
-            await SetData(reports);
-            if (reports == null)
-            {
-                return NotFound();
+                var reports = await _context.Report.FindAsync(id);
+                await SetData(reports);
+                if (reports == null)
+                {
+                    return NotFound();
+                }
+
+                return View(reports);
             }
-            
-            return View(reports);
+            else
+            {
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         // POST: Reports/Edit/5
@@ -132,7 +152,7 @@ namespace Eve_Intel_Manager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ReportID,ReportBody,ReportGenerated,ReportExpiry,CreatedBy")] Reports reports)
         {
-            
+
 
             if (id != reports.ReportID)
             {
@@ -141,13 +161,19 @@ namespace Eve_Intel_Manager.Controllers
 
             if (ModelState.IsValid)
             {
-                
+
                 try
                 {
-                    await SetData(reports);
-                    _context.Update(reports);
-                    await _context.SaveChangesAsync();
-                    
+                    if (isAuthed)
+                    {
+                        await SetData(reports);
+                        _context.Update(reports);
+                        await _context.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        return RedirectToAction(nameof(Index));
+                    }
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -168,19 +194,27 @@ namespace Eve_Intel_Manager.Controllers
         // GET: Reports/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            if (isAuthed)
             {
-                return NotFound();
-            }
 
-            var reports = await _context.Report
-                .FirstOrDefaultAsync(m => m.ReportID == id);
-            if (reports == null)
+                if (id == null)
+                {
+                    return NotFound();
+                }
+
+                var reports = await _context.Report
+                    .FirstOrDefaultAsync(m => m.ReportID == id);
+                if (reports == null)
+                {
+                    return NotFound();
+                }
+
+                return View(reports);
+            }
+            else
             {
-                return NotFound();
+                return RedirectToAction(nameof(Index));
             }
-
-            return View(reports);
         }
 
         // POST: Reports/Delete/5
@@ -198,7 +232,6 @@ namespace Eve_Intel_Manager.Controllers
         {
             return _context.Report.Any(e => e.ReportID == id);
         }
-
 
         string SetTime()
         {
@@ -225,14 +258,34 @@ namespace Eve_Intel_Manager.Controllers
                 Scopes = User.FindFirstValue("Scopes")
             };
 
-           
+
             var locationInfo = await esiClient.Location.GetCharacterLocationV1Async(auth);
             var location = await esiClient.Universe.GetSolarSystemInfoV4Async(locationInfo.Model.SolarSystemId);
             reports.CreatedBy = characterInfo.Model.Name;
             reports.ReportLocation = location.Model.Name;
             reports.ReportGenerated = SetTime();
-            
+            string corpname = corporationInfo.Model.Name;
+            string charname = characterInfo.Model.Name;
+
+            await AuthUser(corpname, charname);
             return View(reports);
+        }
+        public async Task AuthUser(string usercorp, string charname)
+        {
+
+
+            isAuthed = _context.UserModel.Any(cn => cn.charName == charname)
+                    && _context.AccessModel.Any(n => n.corpName == usercorp);
+
+
+            if (!isAuthed)
+            {
+                _context.UserModel.Add(new UserModel() { charName = charname, charRole = "User" });
+                _context.SaveChanges();
+
+                isAuthed = _context.AccessModel.Any(n => n.corpName == usercorp);
+
+            }
         }
     }
 }

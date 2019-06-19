@@ -14,7 +14,7 @@ using System.Linq;
 
 using Microsoft.EntityFrameworkCore;
 using Eve_Intel_Manager.Entities;
-using Eve_Intel_Manager.Authorizer;
+
 
 namespace Eve_Intel_Manager.Controllers
 {

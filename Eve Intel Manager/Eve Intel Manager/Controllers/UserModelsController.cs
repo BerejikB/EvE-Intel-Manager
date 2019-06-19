@@ -12,7 +12,6 @@ using EVEStandard.Models.SSO;
 using Microsoft.AspNetCore.Authorization;
 using EVEStandard;
 using System.Security.Claims;
-using Eve_Intel_Manager.Authorizer;
 
 
 namespace Eve_Intel_Manager.Controllers
@@ -21,31 +20,47 @@ namespace Eve_Intel_Manager.Controllers
     {
         private readonly EIMReportsDbContext _context;
         private readonly EVEStandardAPI esiClient;
-        private readonly CharInfo _charInfo;
-
+      
         public bool isAuthed = false;
-        public UserModelsController(EIMReportsDbContext context, EVEStandardAPI esiClient, CharInfo charInfo)
+        public UserModelsController(EIMReportsDbContext context, EVEStandardAPI esiClient)
         {
             _context = context;
-            this.esiClient = esiClient;
-            _charInfo = charInfo;
-        }
-        
-       public  async Task AuthUser( EIMReportsDbContext context, EVEStandardAPI esiClient)
-        {
-           
-             isAuthed = context.UserModel.Any(cn => cn.charName == _charInfo.characterName)
-                    && context.UserModel.Any(cr => cr.charRole == "Admin");
-            
+            this.esiClient = esiClient;          
         }
 
-        
+        public async Task AuthUser(string usercorp, string charname)
+        {
+            isAuthed = _context.UserModel.Any(cn => cn.charName == charname)
+                    && _context.UserModel.Any(cr => cr.charRole == "Admin");
+        }
         // GET: UserModels
-        [Authorize][EIMAuthorize]
         public async Task<IActionResult> Index()
         {
+            var characterId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var characterInfo = await esiClient.Character.GetCharacterPublicInfoV4Async(characterId);
+            var corporationInfo = await esiClient.Corporation.GetCorporationInfoV4Async((int)characterInfo.Model.CorporationId);
 
-             await AuthUser(_context, esiClient);
+            var auth = new AuthDTO
+            {
+                AccessToken = new AccessTokenDetails
+                {
+                    AccessToken = User.FindFirstValue("AccessToken"),
+                    ExpiresUtc = DateTime.Parse(User.FindFirstValue("AccessTokenExpiry")),
+                    RefreshToken = User.FindFirstValue("RefreshToken")
+                },
+                CharacterId = characterId,
+                Scopes = User.FindFirstValue("Scopes")
+            };
+
+            var locationInfo = await esiClient.Location.GetCharacterLocationV1Async(auth);
+            var location = await esiClient.Universe.GetSolarSystemInfoV4Async(locationInfo.Model.SolarSystemId);
+            string charname = characterInfo.Model.Name;
+            string corpinfo = corporationInfo.Model.Name;
+            await AuthUser(corpinfo, charname);
+            //INSERT MODEL HERE
+            //////
+
+
             if (isAuthed)
             {
                 return View(await _context.UserModel.ToListAsync());
@@ -55,8 +70,13 @@ namespace Eve_Intel_Manager.Controllers
                 var notAuthorized = new ErrorViewModel();
                 return View(notAuthorized);
             }
-            
+                     
         }
+
+
+      
+        [Authorize][EIMAuthorize]
+        
 
         // GET: UserModels/Details/5
         public async Task<IActionResult> Details(int? id)
