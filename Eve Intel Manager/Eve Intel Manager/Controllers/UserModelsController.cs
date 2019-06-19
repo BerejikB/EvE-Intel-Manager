@@ -33,8 +33,8 @@ namespace Eve_Intel_Manager.Controllers
             isAuthed = _context.UserModel.Any(cn => cn.charName == charname)
                     && _context.UserModel.Any(cr => cr.charRole == "Admin");
         }
-        // GET: UserModels
-        public async Task<IActionResult> Index()
+
+        public async Task<IActionResult> SetData(EIMReportsDbContext context)
         {
             var characterId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var characterInfo = await esiClient.Character.GetCharacterPublicInfoV4Async(characterId);
@@ -52,15 +52,25 @@ namespace Eve_Intel_Manager.Controllers
                 Scopes = User.FindFirstValue("Scopes")
             };
 
+
             var locationInfo = await esiClient.Location.GetCharacterLocationV1Async(auth);
             var location = await esiClient.Universe.GetSolarSystemInfoV4Async(locationInfo.Model.SolarSystemId);
+           
+            
+            string corpname = corporationInfo.Model.Name;
             string charname = characterInfo.Model.Name;
-            string corpinfo = corporationInfo.Model.Name;
-            await AuthUser(corpinfo, charname);
-            //INSERT MODEL HERE
-            //////
+
+            await AuthUser(corpname, charname);
+            return View(context);
+        }
 
 
+        // GET: UserModels
+        public async Task<IActionResult> Index(EIMReportsDbContext context)
+        {
+           await SetData(context);
+           
+            
             if (isAuthed)
             {
                 return View(await _context.UserModel.ToListAsync());

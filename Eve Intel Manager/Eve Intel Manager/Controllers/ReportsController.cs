@@ -100,15 +100,13 @@ namespace Eve_Intel_Manager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Reports reports)
         {
+            await SetData(reports);
             if (isAuthed)
             {
-
-                await SetData(reports);
                 if (ModelState.IsValid)
                 {
                     _context.Add(reports);
                     await _context.SaveChangesAsync();
-
                     return RedirectToAction(nameof(Index));
 
                 }
