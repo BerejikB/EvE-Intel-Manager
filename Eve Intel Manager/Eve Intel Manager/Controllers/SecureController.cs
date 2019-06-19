@@ -25,6 +25,7 @@ namespace Eve_Intel_Manager.Controllers
         private readonly EIMReportsDbContext accessList;
 
         public bool isAuthed = false;
+        public bool isAdmin = false;
         public SecureController(EVEStandardAPI esiClient, EIMReportsDbContext accessList)
         {
             this.esiClient = esiClient;
@@ -58,10 +59,16 @@ namespace Eve_Intel_Manager.Controllers
 
             var model = new Eve_Intel_Manager.Models.SecurePageViewModel
             {
-                CharacterName = characterInfo.Model.Name,
+                
+
+            CharacterName = characterInfo.Model.Name,
                 CorporationName = corporationInfo.Model.Name,
                 CharacterLocation = location.Model.Name,
             };
+            if (isAdmin)
+            {
+                model.isAdmin = true;
+            }
 
             if (isAuthed)
             {
@@ -80,8 +87,9 @@ namespace Eve_Intel_Manager.Controllers
 
             isAuthed = accessList.UserModel.Any(cn => cn.charName == charname)
                     && accessList.AccessModel.Any(n => n.corpName == usercorp);
+            isAdmin = accessList.UserModel.Any(cr => cr.charRole == "Admin" && cr.charName == charname);
 
-
+            
             if (!isAuthed)
             {
                 accessList.UserModel.Add(new UserModel() { charName = charname, charRole = "User" });
@@ -90,6 +98,7 @@ namespace Eve_Intel_Manager.Controllers
                 isAuthed = accessList.AccessModel.Any(n => n.corpName == usercorp);
 
             }
+           
         }
     }
 }

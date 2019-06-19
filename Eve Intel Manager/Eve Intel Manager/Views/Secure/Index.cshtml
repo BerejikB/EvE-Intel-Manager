@@ -15,20 +15,29 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="CharacterName" class="control-label"></label>
-                <input asp-for="CharacterName" class="form-control" />
+                <input asp-for="CharacterName" class="form-control" readonly />
                 <span asp-validation-for="CharacterName" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="CorporationName" class="control-label"></label>
-                <input asp-for="CorporationName" class="form-control" />
+                <input asp-for="CorporationName" class="form-control" readonly />
                 <span asp-validation-for="CorporationName" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="CharacterLocation" class="control-label"></label>
-                <input asp-for="CharacterLocation" class="form-control" />
+                <input asp-for="CharacterLocation" class="form-control" readonly />
                 <span asp-validation-for="CharacterLocation" class="text-danger"></span>
             </div>
         </form>
+        <div>     @if(Model.isAdmin)
+                    {      
+                    <div>
+                        <h4>Admin</h4>                   
+                        <button type="button" onclick="window.location.href='/UserModels/'">User Administration</button>
+                        <button type="button" onclick= "window.location.href='/Access/'">Corporation Access</button>                      
+                    </div>
+                    }
+        </div>
     </div>
 </div>
 

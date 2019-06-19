@@ -30,11 +30,12 @@ namespace Eve_Intel_Manager.Controllers
 
         public async Task AuthUser(string usercorp, string charname)
         {
-            isAuthed = _context.UserModel.Any(cn => cn.charName == charname)
-                    && _context.UserModel.Any(cr => cr.charRole == "Admin");
+            isAuthed = _context.UserModel.Any(cn => cn.charName == charname && cn.charRole == "Admin");
+            //isAuthed = _context.UserModel.Where(user => user.charName == charname).Where(user => user.charRole == "Admin").Count() == 1;
+
         }
 
-        public async Task<IActionResult> SetData(EIMReportsDbContext context)
+        public async Task<IActionResult> SetData(UserModel userModel)
         {
             var characterId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var characterInfo = await esiClient.Character.GetCharacterPublicInfoV4Async(characterId);
@@ -59,16 +60,16 @@ namespace Eve_Intel_Manager.Controllers
             
             string corpname = corporationInfo.Model.Name;
             string charname = characterInfo.Model.Name;
-
+            isAuthed = _context.UserModel.Any(cr => cr.charRole == "Admin" && cr.charName == charname);
             await AuthUser(corpname, charname);
-            return View(context);
+            return View(_context);
         }
 
 
         // GET: UserModels
-        public async Task<IActionResult> Index(EIMReportsDbContext context)
+        public async Task<IActionResult> Index(UserModel userModel)
         {
-           await SetData(context);
+           await SetData(userModel);
            
             
             if (isAuthed)

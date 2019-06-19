@@ -16,6 +16,8 @@ namespace Eve_Intel_Manager.Models
         public string CorporationName { get; set; }
         public string CharacterLocation { get; set; }
 
+        public bool isAdmin { get; set; } = false;
+
         
     }
 }

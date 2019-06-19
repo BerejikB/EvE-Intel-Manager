@@ -92,6 +92,16 @@ namespace Eve_Intel_Manager
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
+
+                routes.MapRoute(
+                    name: "UserAdmin",
+                    template: "UserModels/{action=Index}/{id?}",
+                    defaults: new  { controller = "UserModels" } );
+
+               routes.MapRoute(
+                    name: "CorpAccess",
+                    template: "Access/{action=Index}/{id?}",
+                    defaults: new { controller = "Access" });
             });
 
 
