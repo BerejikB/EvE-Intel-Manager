@@ -34,10 +34,10 @@ namespace Eve_Intel_Manager.Controllers
 
         // GET: Reports
         [Authorize]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(Reports reports)
         {
             
-            await SetData(report);
+            await SetData(reports);
             //INSERT MODEL HERE
             if (isAuthed)
             {
