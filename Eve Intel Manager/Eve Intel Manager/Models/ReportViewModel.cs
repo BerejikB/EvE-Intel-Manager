@@ -22,28 +22,18 @@ using Eve_Intel_Manager.Entities;
 
 
 
-namespace Eve_Intel_Manager.Entities
+namespace Eve_Intel_Manager.Models
 {
 
     [Authorize]
-    public class Reports
+
+    public class ReportViewModel
     {
 
-        [Key]
-        public int ReportID { get; set; }
         [Required]
         public string ReportBody { get; set; }
         [Required]
-        public string ReportLocation { get; set; }
-        [Required]
-        public string ReportGenerated { get; set; }
-        [Required]
         public string ReportExpiry { get; set; } = "00:15:00";
-        [Required]
-        public string CreatedBy
-        {
-            get; set;
-        }
 
 
 

@@ -17,35 +17,21 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Eve_Intel_Manager.Entities;
+using System.ComponentModel.DataAnnotations.Schema;
 
-
-
-
-
-namespace Eve_Intel_Manager.Entities
+namespace Eve_Intel_Manager.Models
 {
+    [Table("UserList")]
+    public class UserModel
 
-    [Authorize]
-    public class Reports
     {
-
         [Key]
-        public int ReportID { get; set; }
         [Required]
-        public string ReportBody { get; set; }
+        public int charID { get; set; }
         [Required]
-        public string ReportLocation { get; set; }
+        public string charName { get; set; }
         [Required]
-        public string ReportGenerated { get; set; }
-        [Required]
-        public string ReportExpiry { get; set; } = "00:15:00";
-        [Required]
-        public string CreatedBy
-        {
-            get; set;
-        }
-
-
+        public string charRole { get; set; }
 
     }
 }

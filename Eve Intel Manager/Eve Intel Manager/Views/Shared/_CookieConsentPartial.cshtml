@@ -6,10 +6,12 @@
     var cookieString = consentFeature?.CreateConsentCookie();
 }
 
+@{IgnoreBody();}
+
 @if (showBanner)
 {
     <div id="cookieConsent" class="alert alert-info alert-dismissible fade show" role="alert">
-        This website uses cookies to store your data. <a asp-area="" asp-controller="Home" ></a>.
+        This website uses cookies to store your data. You Must accept in order to log in. <a asp-area="" asp-controller="Home" ></a>.
         <button type="button" class="accept-policy close" data-dismiss="alert" aria-label="Close" data-cookie-string="@cookieString">
             <span aria-hidden="true">Accept</span>
         </button>

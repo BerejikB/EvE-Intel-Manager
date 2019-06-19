@@ -9,12 +9,12 @@ using Eve_Intel_Manager.Entities;
 using EVEStandard;
 using EVEStandard.Models.API;
 using EVEStandard.Models.SSO;
-
+using Eve_Intel_Manager.Models;
 using Microsoft.AspNetCore.Authorization;
 
 
 using System.Security.Claims;
-
+using Eve_Intel_Manager.Authorizer;
 
 namespace Eve_Intel_Manager.Controllers
 {
@@ -22,27 +22,38 @@ namespace Eve_Intel_Manager.Controllers
     public class ReportsController : Controller
     {
         private readonly EIMReportsDbContext _context;
-
+        private readonly CharInfo _charInfo;
         private readonly EVEStandardAPI esiClient;
-        public ReportsController(EIMReportsDbContext context, EVEStandardAPI esiClient)
+        public ReportsController(EIMReportsDbContext context, EVEStandardAPI esiClient, CharInfo charInfo)
         {
             _context = context;
             this.esiClient = esiClient;
+            _charInfo = charInfo;
 
+        }
+        bool isAuthed = false;
+        public async Task AuthUser(EIMReportsDbContext context, EVEStandardAPI esiClient)
+        {
+
+            isAuthed = context.UserModel.Any(cn => cn.charName == _charInfo.characterName)
+                   && context.AccessModel.Any(n => n.corpName == _charInfo.characterCorp);
         }
 
         // GET: Reports
-        public DateTime timenow()
-        {
-            DateTime time = new DateTime();
-            time.ToUniversalTime();
-            return time;
-        }
-
+        [Authorize]
         public async Task<IActionResult> Index()
         {
-
-            return View(await _context.Report.ToListAsync());
+            await AuthUser(_context, esiClient);
+            if (isAuthed)
+            {
+                return View(await _context.Report.ToListAsync());
+            }
+            else
+            {
+                var notAuthorized = new ErrorViewModel();
+                return View(notAuthorized);
+            }
+           
         }
 
         // GET: Reports/Details/5
@@ -66,33 +77,11 @@ namespace Eve_Intel_Manager.Controllers
         // GET: Reports/Create
         public async Task<IActionResult> Create()
         {
-            var characterId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            var characterInfo = await esiClient.Character.GetCharacterPublicInfoV4Async(characterId);
-            var corporationInfo = await esiClient.Corporation.GetCorporationInfoV4Async((int)characterInfo.Model.CorporationId);
 
-            var auth = new AuthDTO
-            {
-                AccessToken = new AccessTokenDetails
-                {
-                    AccessToken = User.FindFirstValue("AccessToken"),
-                    ExpiresUtc = DateTime.Parse(User.FindFirstValue("AccessTokenExpiry")),
-                    RefreshToken = User.FindFirstValue("RefreshToken")
-                },
-                CharacterId = characterId,
-                Scopes = User.FindFirstValue("Scopes")
-            };
 
-            var locationInfo = await esiClient.Location.GetCharacterLocationV1Async(auth);
-            var location = await esiClient.Universe.GetSolarSystemInfoV4Async(locationInfo.Model.SolarSystemId);
-
-            var reports = new Eve_Intel_Manager.Entities.Reports()
-            {
-                CreatedBy = characterInfo.Model.Name,
-                //CorporationName = corporationInfo.Model.Name,
-                ReportLocation = location.Model.Name,
-                ReportGenerated = SetTime()
-            };
-
+            var reports = new Eve_Intel_Manager.Entities.Reports();
+            var reportInputData = new Eve_Intel_Manager.Models.ReportViewModel();
+            await SetData(reports);
             return View(reports);
         }
 
@@ -103,29 +92,8 @@ namespace Eve_Intel_Manager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Reports reports)
         {
-            var characterId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            var characterInfo = await esiClient.Character.GetCharacterPublicInfoV4Async(characterId);
-            var corporationInfo = await esiClient.Corporation.GetCorporationInfoV4Async((int)characterInfo.Model.CorporationId);
 
-            var auth = new AuthDTO
-            {
-                AccessToken = new AccessTokenDetails
-                {
-                    AccessToken = User.FindFirstValue("AccessToken"),
-                    ExpiresUtc = DateTime.Parse(User.FindFirstValue("AccessTokenExpiry")),
-                    RefreshToken = User.FindFirstValue("RefreshToken")
-                },
-                CharacterId = characterId,
-                Scopes = User.FindFirstValue("Scopes")
-            };
-
-            var locationInfo = await esiClient.Location.GetCharacterLocationV1Async(auth);
-            var location = await esiClient.Universe.GetSolarSystemInfoV4Async(locationInfo.Model.SolarSystemId);
-
-                reports.CreatedBy = characterInfo.Model.Name;
-                reports.ReportLocation = location.Model.Name;
-                reports.ReportGenerated = SetTime();
-
+            await SetData(reports);
             if (ModelState.IsValid)
             {
                 _context.Add(reports);
@@ -140,7 +108,7 @@ namespace Eve_Intel_Manager.Controllers
         // GET: Reports/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-           
+
 
             if (id == null)
             {
@@ -148,11 +116,12 @@ namespace Eve_Intel_Manager.Controllers
             }
 
             var reports = await _context.Report.FindAsync(id);
+            await SetData(reports);
             if (reports == null)
             {
                 return NotFound();
             }
-            await SetData(reports);
+            
             return View(reports);
         }
 
@@ -163,7 +132,7 @@ namespace Eve_Intel_Manager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ReportID,ReportBody,ReportGenerated,ReportExpiry,CreatedBy")] Reports reports)
         {
-            await SetData(reports);
+            
 
             if (id != reports.ReportID)
             {
@@ -172,12 +141,13 @@ namespace Eve_Intel_Manager.Controllers
 
             if (ModelState.IsValid)
             {
-                reports.ReportGenerated = SetTime();
-
+                
                 try
                 {
+                    await SetData(reports);
                     _context.Update(reports);
                     await _context.SaveChangesAsync();
+                    
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -232,11 +202,9 @@ namespace Eve_Intel_Manager.Controllers
 
         string SetTime()
         {
-            DateTime timenow = new DateTime();
-            timenow.ToUniversalTime();
-            string timestring = timenow.ToString();
+            var timenow = DateTime.UtcNow;
+            string timestring = timenow.ToString("HH:mm");
             return timestring;
-            
         }
 
         public async Task<IActionResult> SetData(Reports reports)
@@ -257,15 +225,14 @@ namespace Eve_Intel_Manager.Controllers
                 Scopes = User.FindFirstValue("Scopes")
             };
 
+           
             var locationInfo = await esiClient.Location.GetCharacterLocationV1Async(auth);
             var location = await esiClient.Universe.GetSolarSystemInfoV4Async(locationInfo.Model.SolarSystemId);
             reports.CreatedBy = characterInfo.Model.Name;
             reports.ReportLocation = location.Model.Name;
             reports.ReportGenerated = SetTime();
-
+            
             return View(reports);
-
-
         }
     }
 }

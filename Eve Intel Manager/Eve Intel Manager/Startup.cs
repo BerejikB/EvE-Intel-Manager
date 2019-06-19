@@ -10,6 +10,7 @@ using System;
 using EVEStandard;
 using Microsoft.EntityFrameworkCore;
 using Eve_Intel_Manager.Entities;
+using Eve_Intel_Manager.Models;
 
 namespace Eve_Intel_Manager
 {
@@ -64,8 +65,6 @@ namespace Eve_Intel_Manager
 
 
             services.AddDbContext<EIMReportsDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DbConString")));
-
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

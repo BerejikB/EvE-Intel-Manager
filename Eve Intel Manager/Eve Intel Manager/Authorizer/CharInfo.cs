@@ -1,5 +1,4 @@
-﻿
-using EVEStandard.Models.API;
+﻿using EVEStandard.Models.API;
 using EVEStandard.Models.SSO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,30 +7,29 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using EVEStandard;
 using Eve_Intel_Manager.Models;
-
 using System.Collections.Generic;
 using System.Linq;
-
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Eve_Intel_Manager.Entities;
-using Eve_Intel_Manager.Authorizer;
 
-namespace Eve_Intel_Manager.Controllers
+
+namespace Eve_Intel_Manager.Authorizer
 {
-    [Authorize]
-    public class SecureController : Controller
+    public class CharInfo : Controller
     {
         private readonly EVEStandardAPI esiClient;
         private readonly EIMReportsDbContext accessList;
-
-        public bool isAuthed = false;
-        public SecureController(EVEStandardAPI esiClient, EIMReportsDbContext accessList)
+         public CharInfo(EVEStandardAPI esiClient, EIMReportsDbContext accessList)
         {
             this.esiClient = esiClient;
             this.accessList = accessList;
         }
-
-        public async Task<IActionResult> Index()
+        public string characterName { get; set; }
+        public string characterRole { get; set; }
+        public string characterCorp { get; set; }
+        public string characterSystem { get; set; }
+        public async Task SetData()
         {
             var characterId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var characterInfo = await esiClient.Character.GetCharacterPublicInfoV4Async(characterId);
@@ -51,45 +49,11 @@ namespace Eve_Intel_Manager.Controllers
 
             var locationInfo = await esiClient.Location.GetCharacterLocationV1Async(auth);
             var location = await esiClient.Universe.GetSolarSystemInfoV4Async(locationInfo.Model.SolarSystemId);
-            string charname = characterInfo.Model.Name;
-            string corpinfo = corporationInfo.Model.Name;
-            await AuthUser(corpinfo, charname);
-
-
-            var model = new Eve_Intel_Manager.Models.SecurePageViewModel
-            {
-                CharacterName = characterInfo.Model.Name,
-                CorporationName = corporationInfo.Model.Name,
-                CharacterLocation = location.Model.Name,
-            };
-
-            if (isAuthed)
-            {
-                return View(model);
-            }
-
-            var notAuthorized = new ErrorViewModel();
-            return View(notAuthorized);
+            characterName = characterInfo.Model.Name;
+            characterSystem = location.Model.Name;
+            //characterRole = accessList.UserModel.characterRole;
+            characterRole = corporationInfo.Model.Name;
         }
 
-
-
-        public async Task AuthUser(string usercorp, string charname)
-        {
-
-
-            isAuthed = accessList.UserModel.Any(cn => cn.charName == charname)
-                    && accessList.AccessModel.Any(n => n.corpName == usercorp);
-
-
-            if (!isAuthed)
-            {
-                accessList.UserModel.Add(new UserModel() { charName = charname, charRole = "User" });
-                accessList.SaveChanges();
-
-                isAuthed = accessList.AccessModel.Any(n => n.corpName == usercorp);
-
-            }
-        }
     }
 }
