@@ -10,10 +10,10 @@ using System;
 using EVEStandard;
 using Microsoft.EntityFrameworkCore;
 using Eve_Intel_Manager.Entities;
-using Eve_Intel_Manager.Models;
-
+using Eve_Intel_Manager.Notification;
 namespace Eve_Intel_Manager
 {
+
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -60,6 +60,7 @@ namespace Eve_Intel_Manager
 
             // Session is required 
             services.AddSession();
+            services.AddSignalR();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
@@ -86,7 +87,10 @@ namespace Eve_Intel_Manager
 
             app.UseAuthentication();
             app.UseSession();
-
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<Notifications>("/Notifications");
+            });
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -96,12 +100,12 @@ namespace Eve_Intel_Manager
                 routes.MapRoute(
                     name: "UserAdmin",
                     template: "UserModels/{action=Index}/{id?}",
-                    defaults: new  { controller = "UserModels" } );
+                    defaults: new { controller = "UserModels" });
 
-               routes.MapRoute(
-                    name: "CorpAccess",
-                    template: "Access/{action=Index}/{id?}",
-                    defaults: new { controller = "Access" });
+                routes.MapRoute(
+                     name: "CorpAccess",
+                     template: "Access/{action=Index}/{id?}",
+                     defaults: new { controller = "Access" });
             });
 
 
@@ -114,5 +118,9 @@ namespace Eve_Intel_Manager
 
 
         }
-    }
-}
+
+
+
+
+
+    } }
